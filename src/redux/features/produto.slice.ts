@@ -1,6 +1,8 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios, { AxiosResponse } from "axios";
-import { api } from "../../services/instanceAxios";
+import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
+import axios, {AxiosResponse} from "axios";
+import {api} from "../../services/instanceAxios";
+import {Config} from "../../config";
+
 
 export interface Produto {
     id?: string;
@@ -44,7 +46,7 @@ export const addProduto = createAsyncThunk(
     await wait(1000);
 
     const response: AxiosResponse<Produto> = await api.post(
-      "http://localhost:3333/v1/produto",
+      `${Config.apiUrl}/v1/produto`,
       produto,
       { withCredentials: true }
     );
@@ -73,14 +75,14 @@ const apiProdutoSlice = createSlice({
             .addCase(fetchProdutos.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.error.message ?? "";
-            });
-        // .addCase(
-        //   addProduto.fulfilled,
-        //   (state, action: PayloadAction<Produto>) => {
-        //     state.loading = false;
-        //     state.produtos.push(action.payload);
-        //   }
-        // );
+            })
+            .addCase(
+                addProduto.fulfilled,
+                (state, action: PayloadAction<Produto>) => {
+                    state.loading = false;
+                    state.produtos.push(action.payload);
+                }
+            );
     },
 });
 
