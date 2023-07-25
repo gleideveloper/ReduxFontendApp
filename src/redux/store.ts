@@ -1,26 +1,16 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import ProdutoReducer from "./features/produto.slice";
-import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
+import { configureStore } from '@reduxjs/toolkit';
+import { useDispatch } from 'react-redux';
+import { persistStore } from 'redux-persist';
+import rootReducer from './rootReducer';
 
-const rooReducer = combineReducers({
-    produto: ProdutoReducer,
+const store = configureStore({
+    reducer: rootReducer,
 });
 
-const persistConfig = {
-    key: "root",
-    storage,
-};
-
-const persistedReducer = persistReducer(persistConfig, rooReducer);
-
-export const store = configureStore({
-    reducer: persistedReducer,
-    middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware({
-            serializableCheck: false,
-        }),
-});
-export const persistor = persistStore(store);
-export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export const useAppDispatch = () => useDispatch<AppDispatch>();
+
+export default store;
+
+// Export persistor separately
+export const persistor = persistStore(store);
